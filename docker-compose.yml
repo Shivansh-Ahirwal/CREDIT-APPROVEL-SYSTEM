@@ -1,0 +1,29 @@
+version: '3.9'
+
+services:
+  # Django application service
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DEBUG=True
+
+  # PostgreSQL database service
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: credit_approvel_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+# Named volume for persistent storage of PostgreSQL data
+volumes:
+  postgres_data:
