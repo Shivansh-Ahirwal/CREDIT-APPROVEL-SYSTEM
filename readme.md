@@ -1,129 +1,140 @@
-# CREDIT APPROVEL SYSTEM
+# Credit Approval Application
 
-This repository contains the source code for the **Credit Approval Application**. The project is built using Django and Django REST Framework (DRF) and allows customers to register, check loan eligibility, create loans, and manage loan details.
+The **Credit Approval Application** is a Django-based system to handle customer registration, loan eligibility checks, and loan management. It offers REST APIs to perform all operations and is containerized using Docker for ease of deployment.
 
 ---
 
 ## Table of Contents
 
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Setup](#setup)
-- [Running the Project](#running-the-project)
-- [API Endpoints](#api-endpoints)
-  - [Example Usage](#example-usage)
-- [Troubleshooting](#troubleshooting)
-- [Features](#features)
-- [Contributing](#contributing)
-- [License](#license)
+1. [Requirements](#requirements)
+2. [Installation](#installation)
+3. [Setup](#setup)
+4. [Running the Application](#running-the-application)
+   - [Without Docker](#without-docker)
+   - [With Docker](#with-docker)
+5. [API Endpoints](#api-endpoints)
+6. [Sample API Usage](#sample-api-usage)
+7. [Troubleshooting](#troubleshooting)
+8. [Contributing](#contributing)
+9. [License](#license)
 
 ---
 
 ## Requirements
 
-To run this project, ensure you have the following:
-
-- **Python**: 3.10 or later
-- **Django**: 5.x or later
-- **Django REST Framework**: Installed via `requirements.txt`
-- **PostgreSQL**: For database support
-- **HTTP Client**: Tools like [Postman](https://www.postman.com/) or `curl` for testing APIs.
+- **Python**: 3.10 or higher
+- **Docker**: Latest version
+- **Docker Compose**: Installed and configured
+- **Postman** (optional): For API testing
+- **Curl** (optional): For API testing
 
 ---
 
 ## Installation
 
-### 1. Clone the Repository
+1. **Clone the Repository**:
 
-```bash
-git clone <repository-url>
-cd credit_approvel_app
-```
+    ```bash
+    git clone <repository-url>
+    cd credit_approvel_app
+    ```
 
-### 2. Create a Virtual Environment
+2. **Create a Virtual Environment (Optional)**:
 
-```bash
-python3.10 -m venv venv
-venv\Scripts\activate   #On Linux : source venv/bin/activate
-```
+    ```bash
+    python3.10 -m venv venv
+    source venv/bin/activate  # On Windows: venv\Scripts\activate
+    ```
 
-### 3. Install Dependencies
+3. **Install Dependencies**:
 
-```bash
-pip install -r requirements.txt
-```
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-### 4. Set Up the Database
+---
 
-Update the `DATABASES` section in `settings.py` with your PostgreSQL credentials.
+## Setup
 
-### 5. Apply Migrations
+### Database Configuration
+
+- **Docker**: Uses PostgreSQL container (see `docker-compose.yml` for details).
+- **Non-Docker**: Configure your database in `credit_approvel_app/settings.py` under the `DATABASES` section.
+
+Apply migrations to initialize the database:
 
 ```bash
 python manage.py migrate
 ```
 
-### 6. Create a Superuser (Optional)
+---
 
-```bash
-python manage.py createsuperuser
-```
+## Running the Application
 
-### 7. Start the Server
+### Without Docker
 
-```bash
-python manage.py runserver
-```
+1. Start the server:
+
+    ```bash
+    python manage.py runserver
+    ```
+
+2. Access the application at `http://127.0.0.1:8000/`.
 
 ---
 
-## Running the Project
+### With Docker
 
-Once the server is running, visit [http://127.0.0.1:8000/](http://127.0.0.1:8000/) for the application.
+1. **Build and Start Containers**:
+
+    ```bash
+    docker-compose up --build
+    ```
+
+2. Access the application at `http://127.0.0.1:8000/`.
+
+3. **Manage the Docker Containers**:
+   - Stop containers: `docker-compose down`
+   - View logs: `docker-compose logs -f`
+   - Rebuild containers: `docker-compose up --build`
 
 ---
 
 ## API Endpoints
 
-Here is a list of the available API endpoints:
-
-| Method | Endpoint                          | Description                                  |
-|--------|-----------------------------------|----------------------------------------------|
-| POST   | `/api/register/`                  | Register a customer                          |
-| POST   | `/api/check-eligibility/`         | Check eligibility for a loan                 |
-| POST   | `/api/create-loan/`               | Create a loan                                |
-| GET    | `/api/view-loan/<int:loan_id>/`   | Fetch details of a loan with loan ID         |
-| GET    | `/api/view-loans/<int:customer_id>/` | Fetch all loans for a specific customer       |
+| Method | Endpoint                                | Description                                       |
+|--------|-----------------------------------------|---------------------------------------------------|
+| POST   | `/api/register/`                        | Register a new customer                          |
+| POST   | `/api/check-eligibility/`               | Check if a customer is eligible for a loan       |
+| POST   | `/api/create-loan/`                     | Create a loan for a customer                     |
+| GET    | `/api/view-loan/<int:loan_id>/`         | Fetch details of a loan with a specific ID       |
+| GET    | `/api/view-loans/<int:customer_id>/`    | Fetch all loans associated with a specific user  |
 
 ---
 
-## Example Usage
+## Sample API Usage
 
-Here are examples of how to use the APIs. Replace `<host>` with `127.0.0.1:8000` for local development.
+### 1. **Register a Customer**
 
----
-
-### 1. Register a Customer (POST `/api/register/`)
-
-#### Request:
+**Request**:
 
 ```bash
-curl -X POST <host>/api/register/ \
+curl -X POST http://127.0.0.1:8000/api/register/ \
 -H "Content-Type: application/json" \
 -d '{
-    "name": "John Doe",
-    "email": "john.doe@example.com",
+    "name": "Alice Smith",
+    "email": "alice.smith@example.com",
     "phone_number": "9876543210"
 }'
 ```
 
-#### Response:
+**Response**:
 
 ```json
 {
     "id": 1,
-    "name": "John Doe",
-    "email": "john.doe@example.com",
+    "name": "Alice Smith",
+    "email": "alice.smith@example.com",
     "phone_number": "9876543210",
     "message": "Customer registered successfully"
 }
@@ -131,107 +142,106 @@ curl -X POST <host>/api/register/ \
 
 ---
 
-### 2. Check Loan Eligibility (POST `/api/check-eligibility/`)
+### 2. **Check Loan Eligibility**
 
-#### Request:
+**Request**:
 
 ```bash
-curl -X POST <host>/api/check-eligibility/ \
+curl -X POST http://127.0.0.1:8000/api/check-eligibility/ \
 -H "Content-Type: application/json" \
 -d '{
     "customer_id": 1,
-    "income": 50000,
-    "credit_score": 750
+    "loan_amount": 50000,
+    "loan_duration_months": 24
 }'
 ```
 
-#### Response:
+**Response**:
 
 ```json
 {
+    "customer_id": 1,
     "is_eligible": true,
-    "message": "Customer is eligible for a loan"
+    "eligible_amount": 50000,
+    "message": "Customer is eligible for the requested loan"
 }
 ```
 
 ---
 
-### 3. Create a Loan (POST `/api/create-loan/`)
+### 3. **Create a Loan**
 
-#### Request:
+**Request**:
 
 ```bash
-curl -X POST <host>/api/create-loan/ \
+curl -X POST http://127.0.0.1:8000/api/create-loan/ \
 -H "Content-Type: application/json" \
 -d '{
     "customer_id": 1,
-    "loan_amount": 200000,
-    "tenure_months": 24,
-    "interest_rate": 7.5
+    "loan_amount": 50000,
+    "loan_duration_months": 24
 }'
 ```
 
-#### Response:
+**Response**:
 
 ```json
 {
-    "loan_id": 101,
+    "loan_id": 1,
+    "customer_id": 1,
+    "loan_amount": 50000,
+    "loan_duration_months": 24,
     "message": "Loan created successfully"
 }
 ```
 
 ---
 
-### 4. View a Loan (GET `/api/view-loan/<int:loan_id>/`)
+### 4. **Fetch Loan Details**
 
-#### Request:
+**Request**:
 
 ```bash
-curl -X GET <host>/api/view-loan/101/ \
--H "Content-Type: application/json"
+curl -X GET http://127.0.0.1:8000/api/view-loan/1/
 ```
 
-#### Response:
+**Response**:
 
 ```json
 {
-    "loan_id": 101,
+    "loan_id": 1,
     "customer_id": 1,
-    "loan_amount": 200000,
-    "tenure_months": 24,
-    "interest_rate": 7.5,
+    "loan_amount": 50000,
+    "loan_duration_months": 24,
     "status": "Active"
 }
 ```
 
 ---
 
-### 5. View All Loans for a Customer (GET `/api/view-loans/<int:customer_id>/`)
+### 5. **Fetch All Loans for a Customer**
 
-#### Request:
+**Request**:
 
 ```bash
-curl -X GET <host>/api/view-loans/1/ \
--H "Content-Type: application/json"
+curl -X GET http://127.0.0.1:8000/api/view-loans/1/
 ```
 
-#### Response:
+**Response**:
 
 ```json
 [
     {
-        "loan_id": 101,
-        "loan_amount": 200000,
-        "tenure_months": 24,
-        "interest_rate": 7.5,
+        "loan_id": 1,
+        "loan_amount": 50000,
+        "loan_duration_months": 24,
         "status": "Active"
     },
     {
-        "loan_id": 102,
-        "loan_amount": 150000,
-        "tenure_months": 18,
-        "interest_rate": 6.8,
-        "status": "Closed"
+        "loan_id": 2,
+        "loan_amount": 100000,
+        "loan_duration_months": 36,
+        "status": "Pending"
     }
 ]
 ```
@@ -240,39 +250,35 @@ curl -X GET <host>/api/view-loans/1/ \
 
 ## Troubleshooting
 
-### Python Version Issue
+### Common Issues
 
-If you encounter the error:
+1. **Database Connection Error**:
+   Ensure the database is running and the credentials in `settings.py` match.
 
-```
-ERROR: No matching distribution found for Django==5.x
-```
+2. **Port Already in Use**:
+   Update the `ports` in `docker-compose.yml`:
 
-Ensure your Python version is 3.10 or later. Upgrade Python and recreate your virtual environment.
+   ```yaml
+   ports:
+     - "8080:8000"
+   ```
 
-### Database Connection Issue
+3. **Docker Build Fails**:
+   Rebuild the containers:
 
-Ensure that your database credentials are correct in `settings.py` and that PostgreSQL is running.
-
----
-
-## Features
-
-- Customer registration and management
-- Loan eligibility checks
-- Loan creation and tracking
-- View specific loans or all loans for a customer
-- Scalable and extensible REST API
+   ```bash
+   docker-compose up --build
+   ```
 
 ---
 
 ## Contributing
 
-Contributions are welcome! Please follow these steps:
+We welcome contributions! Follow these steps:
 
 1. Fork the repository.
-2. Create a new branch for your feature: `git checkout -b feature-name`.
-3. Commit your changes: `git commit -m 'Add feature-name'`.
+2. Create a new branch: `git checkout -b feature-name`.
+3. Commit changes: `git commit -m 'Add feature'`.
 4. Push the branch: `git push origin feature-name`.
 5. Open a pull request.
 
@@ -281,3 +287,5 @@ Contributions are welcome! Please follow these steps:
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
+---
